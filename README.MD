@@ -2,71 +2,59 @@
 
 ## pip install punktdict 
 
+This module provides the `PunktDict` class, which is a subclass of dict with additional functionality for handling nested dictionaries. 
+It also provides some configuration options through the `dictconfig` object.
+
+
 ```python
-# Example usage:
-from punktdict import PunktDict
+import sys
+from punktdict import PunktDict, dictconfig, convert_to_dict
+
+# Configure PunktDict behavior
+dictconfig.allow_nested_attribute_creation = True
+dictconfig.allow_nested_key_creation = True
+dictconfig.convert_all_dicts_recursively = True
 PunktDict._check_forbidden_key = (
-    lambda self, x: x.startswith("_ipytho") or x == "_repr_mimebundle_"
-)  # To avoid accidental creation of certain keys when allow_nested_creation is True
-
-dd = PunktDict(
-    {
-        "school": {
-            "room1": {
-                "student1": "Mario",
-                "student2": "Paulo",
-                "student3": "Bernd",
-                "student4": "Richard",
-                "student5": "Mairo",
-            }
-        }
-    },
-    allow_nested_creation=True,
+    lambda self, x: (x.startswith("_ipython") or x == "_repr_mimebundle_")
 )
-print(f"--------------------\n{dd}")
-dd["school"]["room1"]["student6"] = "Antonio"
-print(f"--------------------\n{dd}")
-dd["school"]["room2"]["student1"] = "Bruno"
-print(f"--------------------\n{dd}")
-dd.school.room3.student1 = "Bruno"
-print(f"--------------------\n{dd}")
-del dd["school"]["room2"]["student1"]
-print(f"--------------------\n{dd}")
-dd.university.all_rooms = []
-print(f"--------------------\n{dd}")
-dd.university.all_rooms.append(1)
-dd["university"]["all_rooms"].append(2)
-dd.university["all_rooms"].append(3)
-print(f"--------------------\n{dd}")
-print(type(dd))
-print(type(dd.convert_to_regular_dict()))
 
-print(dd.random_new_key)  # creates a new key
+# Create a PunktDict object
+d = PunktDict({'popeye': {'mole': {'bole': 'dolle'}}})
 
-try:
-    print(dd._repr_mimebundle_)  # forbidden
-except AttributeError as e:
-    print(e)
+# Access and modify nested dictionary values
+d['hallo']['baba'] = 11
+d.lll.ddd.xxx = 333
 
-try:
-    dd.keys = 3333
-except KeyError as e:
-    print(e)
+# Update PunktDict with new data
+d.update({'rrrx': {'xxxxx': 'bbbb'}})
+d.rrrx.xxxxxxx = []
+d.rrrx.xxxxxxx.append(3)
 
-# {'school': {'room1': {'student1': 'Mario', 'student2': 'Paulo', 'student3': 'Bernd', 'student4': 'Richard', 'student5': 'Mairo'}}}
-# --------------------
-# {'school': {'room1': {'student1': 'Mario', 'student2': 'Paulo', 'student3': 'Bernd', 'student4': 'Richard', 'student5': 'Mairo', 'student6': 'Antonio'}}}
-# --------------------
-# {'school': {'room1': {'student1': 'Mario', 'student2': 'Paulo', 'student3': 'Bernd', 'student4': 'Richard', 'student5': 'Mairo', 'student6': 'Antonio'}, 'room2': {'student1': 'Bruno'}}}
-# --------------------
-# {'school': {'room1': {'student1': 'Mario', 'student2': 'Paulo', 'student3': 'Bernd', 'student4': 'Richard', 'student5': 'Mairo', 'student6': 'Antonio'}, 'room2': {'student1': 'Bruno'}, 'room3': {'student1': 'Bruno'}}}
-# --------------------
-# {'school': {'room1': {'student1': 'Mario', 'student2': 'Paulo', 'student3': 'Bernd', 'student4': 'Richard', 'student5': 'Mairo', 'student6': 'Antonio'}, 'room2': {}, 'room3': {'student1': 'Bruno'}}}
-# --------------------
-# {'school': {'room1': {'student1': 'Mario', 'student2': 'Paulo', 'student3': 'Bernd', 'student4': 'Richard', 'student5': 'Mairo', 'student6': 'Antonio'}, 'room2': {}, 'room3': {'student1': 'Bruno'}}, 'university': {'all_rooms': []}}
-# --------------------
-# {'school': {'room1': {'student1': 'Mario', 'student2': 'Paulo', 'student3': 'Bernd', 'student4': 'Richard', 'student5': 'Mairo', 'student6': 'Antonio'}, 'room2': {}, 'room3': {'student1': 'Bruno'}}, 'university': {'all_rooms': [1, 2, 3]}}
-# <class '__main__.PunktDict'>
-# <class 'dict'>
+# Access nested dictionary values using attribute syntax
+d['gggg']['xxxxx']['tttt'] = 12
+print(d.gggg.xxxxx.tttt)
+
+# Convert PunktDict to a regular dictionary
+di = convert_to_dict(d)
+---------------
+
+Attributes:
+-----------
+- allow_nested_attribute_creation: A boolean flag indicating whether PunktDict allows creation of nested attributes. Default is True.
+- allow_nested_key_creation: A boolean flag indicating whether PunktDict allows creation of nested keys. Default is True.
+- convert_all_dicts_recursively: A boolean flag indicating whether PunktDict recursively converts all nested dictionaries to PunktDict objects. Default is True.
+
+Classes:
+--------
+- PunktDict: A subclass of dict with additional functionality for handling nested dictionaries.
+
+Functions:
+----------
+- check_if_compatible_dict: Checks if an object is a compatible dictionary based on its type and attributes.
+- convert_to_dict: Recursively converts a PunktDict object or a compatible dictionary to a regular dictionary.
+
+Note:
+-----
+The `PunktDict` class overrides several methods and provides additional methods to handle nested dictionaries. The configuration options can be modified through the `dictconfig` object. The `convert_to_dict` function can be used to convert a PunktDict object or a compatible dictionary to a regular dictionary.
 
 ```
